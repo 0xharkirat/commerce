@@ -3,5 +3,22 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    {% for listing in listings %}
+    
+    <div class="card mb-3">
+  <div class="row">
+    <div class="col-md-4">
+      <img src="{{listing.image}}" class="mx-auto my-2 d-block " alt="..." style="height: 16rem;" >
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{listing.title}}</h5>
+        <p class="card-text">{{listing.description}}</p>
+        <p class="card-text"><small class="text-muted">{{listing.timestamp}}</small></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
 {% endblock %}
