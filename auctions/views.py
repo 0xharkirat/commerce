@@ -88,29 +88,25 @@ def create(request):
     return render(request, "auctions/create.html")
 
 def listing(request, listing_id):
-    user = User.objects.get(pk=request.user.id)
 
+    
+        listing = Listing.objects.get(pk=listing_id)
+        # watchlist = listing.users.filter(user=user.id)
+        return render(request, "auctions/listing.html", {
+            "listing": listing,
+            # "watchlist": watchlist
+            
+        })
+
+
+@login_required(login_url='/login')
+def addWatchlist(request, listing_id):
     if request.method == "POST":
 
+        user = User.objects.get(pk=request.user.id)
         listing = Listing.objects.get(pk=int(request.POST["id"]))
-
-        operation = request.POST["operation"]
-        if operation == "add":
-            watchlist = Watchlist(user = user, listing=listing)
-            watchlist.save()
-        elif operation == "delete":
-            watchlist = listing.users.filter(user=user.id)
-            watchlist.delete()
-
+        watchlist = Watchlist(user = user, listing=listing)
+        watchlist.save()
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
 
 
-    else:
-
-        listing = Listing.objects.get(pk=listing_id)
-        watchlist = listing.users.filter(user=user.id)
-        return render(request, "auctions/listing.html", {
-            "listing": listing,
-            "watchlist": watchlist
-            
-        })
