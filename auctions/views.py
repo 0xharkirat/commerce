@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing
+from .models import User, Listing, Watchlist
 
 
 def index(request):
@@ -86,3 +86,31 @@ def create(request):
 
 
     return render(request, "auctions/create.html")
+
+def listing(request, listing_id):
+    user = User.objects.get(pk=request.user.id)
+
+    if request.method == "POST":
+
+        listing = Listing.objects.get(pk=int(request.POST["id"]))
+
+        operation = request.POST["operation"]
+        if operation == "add":
+            watchlist = Watchlist(user = user, listing=listing)
+            watchlist.save()
+        elif operation == "delete":
+            watchlist = listing.users.filter(user=user.id)
+            watchlist.delete()
+
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+
+    else:
+
+        listing = Listing.objects.get(pk=listing_id)
+        watchlist = listing.users.filter(user=user.id)
+        return render(request, "auctions/listing.html", {
+            "listing": listing,
+            "watchlist": watchlist
+            
+        })

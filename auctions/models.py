@@ -20,3 +20,10 @@ class Listing(models.Model):
     def __str__(self):
         return f"{self.title}| bid: {self.bid}| category: {self.category}| Optional fields => description: {self.description}| image: {self.image}"
 
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="users")
+
+    def __str__(self):
+        return f"{self.user} -> {self.listing}"
+
