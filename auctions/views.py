@@ -89,13 +89,21 @@ def create(request):
 
 def listing(request, listing_id):
 
-    
         listing = Listing.objects.get(pk=listing_id)
-        # watchlist = listing.users.filter(user=user.id)
+
+
+        loggeduser = User.objects.filter(pk=request.user.id).first()
+        canremove=False
+        
+        if (loggeduser):
+            for user in listing.users.all():
+                if user.user.id == loggeduser.id:
+                    canremove = True
+                    break
+                
         return render(request, "auctions/listing.html", {
             "listing": listing,
-            # "watchlist": watchlist
-            
+            "canremove": canremove
         })
 
 
@@ -107,6 +115,16 @@ def addWatchlist(request, listing_id):
         listing = Listing.objects.get(pk=int(request.POST["id"]))
         watchlist = Watchlist(user = user, listing=listing)
         watchlist.save()
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+@login_required(login_url='/login')
+def removeWatchlist(request, listing_id):
+    if request.method == "POST":
+
+        user = User.objects.get(pk=request.user.id)
+        listing = Listing.objects.get(pk=int(request.POST["id"]))
+        watchlist = Watchlist.objects.get(user = user, listing=listing)
+        watchlist.delete()
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
 
 

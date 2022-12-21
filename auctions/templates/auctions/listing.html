@@ -5,6 +5,19 @@
 
 {% if user.is_authenticated %}
 
+    {% if canremove %}
+    
+    <form action="{% url 'removeWatchlist' listing.id %}" method="post">
+        {% csrf_token %}
+        <span class="badge badge-secondary">Watchlist</span>
+            <input type="hidden" value="{{ listing.id }}" name="id">
+            
+            <input type="submit" class="btn btn-danger btn-sm" value="Remove from Watchlist">
+        
+    </form>
+
+
+    {% else %}
     <form action="{% url 'addWatchlist' listing.id %}" method="post">
         {% csrf_token %}
 
@@ -12,7 +25,15 @@
             
             <input type="submit" class="btn btn-secondary btn-sm" value="Add to Watchlist">
         
-</form>
+    </form>
+    {% endif %}
+
+            
+    
+    
+
+
+    
 {% endif %}
 <img class="mx-auto my-4 d-block"
 alt="..."
