@@ -41,7 +41,26 @@ style="height: 16rem" src="{{listing.image}}" class="img-fluid" alt="Responsive 
 <p >{{listing.description}}</p>
 <h4>${{ listing.bid }}</h4>
 
-<h5>Details</h5>
+{% if user.is_authenticated %}
+    <form action="{% url 'bid' listing.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+
+        {% if message %}
+        <small class="form-text">
+            {{ message }}
+        </small>
+         {% endif %}
+            <input type="number" name="bid" id="bid" class="form-control" placeholder="{{ listing.bid|add:1 }}" step="0.01" max="99999.99" min={{ listing.bid|add:1 }} required>
+        </div>
+
+        <input type="submit" value="Place Bid" class="btn btn-primary">
+    </form>
+
+{% endif %}
+
+
+<h5 class="mt-4">Details</h5>
     <ul>
         <li>Listed by: <p class="text-primary d-inline">{{ listing.user.username }}</p></li>
         <li>Category: {{ listing.cagtegory }}</li>

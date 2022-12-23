@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Watchlist
+from .models import User, Listing, Watchlist, Bid
 
 
 def index(request):
@@ -88,6 +88,7 @@ def create(request):
     return render(request, "auctions/create.html")
 
 def listing(request, listing_id):
+        message = None
 
         listing = Listing.objects.get(pk=listing_id)
 
@@ -100,10 +101,19 @@ def listing(request, listing_id):
                 if user.user.id == loggeduser.id:
                     canremove = True
                     break
+
+            currentbid =  loggeduser.bids.filter(listing=listing, isCurrent=True)
+            totalbids = listing.bids.all().count()
+            message = f"{totalbids} bid(s) so far."
+            if currentbid:
+                message +=  " Your bid is the current bid."
+
                 
         return render(request, "auctions/listing.html", {
             "listing": listing,
-            "canremove": canremove
+            "canremove": canremove,
+            "message": message,
+           
         })
 
 
@@ -126,5 +136,37 @@ def removeWatchlist(request, listing_id):
         watchlist = Watchlist.objects.get(user = user, listing=listing)
         watchlist.delete()
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+
+@login_required(login_url='/login')
+def bid(request, listing_id):
+    if request.method == 'POST':
+
+        user = User.objects.get(pk=request.user.id)
+        listing = Listing.objects.get(pk=listing_id)
+        bid = float(request.POST["bid"])
+
+        if bid > listing.bid:
+
+            previousbid = Bid.objects.filter(listing=listing, isCurrent=True).first()
+            if previousbid:
+
+                previousbid.isCurrent = False
+                previousbid.save()
+
+            newbid = Bid(user=user, listing=listing, bid=bid)
+            listing.bid = bid
+            listing.save()
+            newbid.save()
+
+            print(bid)
+            return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+            
+            
+                
+
+
+
+
 
 
