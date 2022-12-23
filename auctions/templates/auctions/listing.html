@@ -16,7 +16,7 @@
         
     </form>
 
-
+ 
     {% else %}
     <form action="{% url 'addWatchlist' listing.id %}" method="post">
         {% csrf_token %}
