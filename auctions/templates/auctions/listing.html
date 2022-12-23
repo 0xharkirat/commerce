@@ -5,6 +5,13 @@
 
 {% if user.is_authenticated %}
 
+    {% if listing.winner == user %}
+    <div class="alert alert-success" role="alert">
+        Congratulation! You have won this auction @ <p class="font-weight-bold d-inline">${{listing.bid}}</p>
+        
+      </div>
+    {% endif %}
+
     {% if canremove %}
     
     <form action="{% url 'removeWatchlist' listing.id %}" method="post">
@@ -15,7 +22,6 @@
             <input type="submit" class="btn btn-danger btn-sm" value="Remove from Watchlist">
         
     </form>
-
  
     {% else %}
     <form action="{% url 'addWatchlist' listing.id %}" method="post">
@@ -28,12 +34,6 @@
     </form>
     {% endif %}
 
-            
-    
-    
-
-
-    
 {% endif %}
 <img class="mx-auto my-4 d-block"
 alt="..."
@@ -41,7 +41,7 @@ style="height: 16rem" src="{{listing.image}}" class="img-fluid" alt="Responsive 
 <p >{{listing.description}}</p>
 <h4>${{ listing.bid }}</h4>
 
-{% if user.is_authenticated %}
+{% if user.is_authenticated and listing.isActive %}
     <form action="{% url 'bid' listing.id %}" method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -63,7 +63,31 @@ style="height: 16rem" src="{{listing.image}}" class="img-fluid" alt="Responsive 
 <h5 class="mt-4">Details</h5>
     <ul>
         <li>Listed by: <p class="text-primary d-inline">{{ listing.user.username }}</p></li>
-        <li>Category: {{ listing.cagtegory }}</li>
+        <li>Category: {{ listing.category }}</li>
     </ul>
+
+
+{% if user.is_authenticated %}
+
+    {% if listing.isActive %}
+     <span class="badge badge-success">Active</span>
+
+
+        {% if listing.user.id == user.id %}
+            <form action="{% url 'win' listing.id %}" method="post">
+                {% csrf_token %}
+                
+                <input type="hidden" value="{{ listing.id }}" name="id">
+            
+                <input type="submit" class="btn btn-danger btn-sm" value="Close Listing">
+        
+            </form>
+        {% endif %}
+    {% else %}
+        <span class="badge badge-warning">Closed</span>
+    {% endif %}
+
+{% endif %}
+
 
 {% endblock %}

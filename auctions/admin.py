@@ -4,7 +4,7 @@ from .models import Listing, Watchlist, Bid
 
 # Register your models here.
 class ListingAdmin(admin.ModelAdmin):
-    list_display=("id", "title", "description", "bid", "image", "category", "timestamp")
+    list_display=("id", "title", "description", "bid", "image", "category", "timestamp", "isActive", "winner")
 
 class BidAdmin(admin.ModelAdmin):
     list_display=("user", "listing", "bid", "isCurrent")

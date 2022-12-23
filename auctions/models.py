@@ -15,17 +15,19 @@ class Listing(models.Model):
     category = models.CharField(max_length=255, default="General")
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings", null=True)
+    isActive = models.BooleanField(default=True)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="won", null=True)
     
 
     def __str__(self):
-        return f"{self.title}| bid: {self.bid}| category: {self.category}| Optional fields => description: {self.description}| image: {self.image}"
+        return f"{self.title}| {self.bid}| {self.category}| {self.user}| {self.isActive}"
 
 class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="users")
 
     def __str__(self):
-        return f"{self.user} -> {self.listing}"
+        return f"{self.user} -Watchlisted-> {self.listing}"
 
 class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
@@ -36,3 +38,7 @@ class Bid(models.Model):
     def __str__(self):
         return f"{self.user}| {self.listing}| {self.bid}| {self.isCurrent}"
 
+
+
+
+	

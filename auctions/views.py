@@ -159,9 +159,29 @@ def bid(request, listing_id):
             listing.save()
             newbid.save()
 
-            print(bid)
-            return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
             
+    return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+    
+
+@login_required(login_url='/login')
+def win(request, listing_id):
+    if request.method == "POST":
+        user = User.objects.get(pk=request.user.id)          
+        listing = Listing.objects.get(pk=int(request.POST["id"]))
+
+        if user == listing.user:
+            winner = listing.bids.filter(isCurrent=True).first()
+            if winner:
+                listing.winner = winner.user
+                listing.isActive = False
+                listing.save()
+
+    return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+
+
+
+
             
                 
 
