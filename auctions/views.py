@@ -17,7 +17,7 @@ def index(request):
     if loggeduser:
 
         totalwatchlist = loggeduser.watchlist.all().count()
-        print(totalwatchlist)
+        
 
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all(),
@@ -85,7 +85,7 @@ def create(request):
         description = request.POST["description"]
         bid = float(request.POST["bid"])
         image = request.POST["image"]
-        category = request.POST["category"]
+        category = request.POST["category"].lower()
 
         listing = Listing(title=title, description=description, bid=bid, image=image, category=category, user=user)
 
@@ -101,6 +101,7 @@ def create(request):
 def listing(request, listing_id):
         message = None
         totalwatchlist = None
+        
 
         listing = Listing.objects.get(pk=listing_id)
         comments = listing.listingComments.all()
@@ -110,6 +111,7 @@ def listing(request, listing_id):
         canremove=False
         
         if (loggeduser):
+            totalwatchlist = loggeduser.watchlist.all().count()
             for user in listing.users.all():
                 if user.user.id == loggeduser.id:
                     canremove = True
@@ -128,6 +130,7 @@ def listing(request, listing_id):
             "canremove": canremove,
             "message": message,
             "comments": comments,
+            "totalwatchlist": totalwatchlist
            
         })
 
@@ -217,6 +220,44 @@ def watchlist(request):
 
     return render(request, "auctions/watchlist.html", {
         "watchlist": watchlist
+    })
+
+
+@login_required(login_url='/login')
+def categories(request):
+
+    categoriesSet = set()
+    categories = Listing.objects.values('category')
+
+    for category in categories:
+        categoriesSet.add(category["category"])
+    
+
+    print(categoriesSet)
+
+    return render(request, "auctions/categories.html", {
+        "categories": categoriesSet,
+    })
+
+@login_required(login_url='/login')
+def category(request, category):
+
+    
+
+    if category == "general":
+
+        listings = Listing.objects.filter(category="")
+    
+    else:
+        listings = Listing.objects.filter(category=category)
+
+    
+
+    
+
+    return render(request, "auctions/category.html", {
+        "listings": listings,
+        "category": category
     })
 
 

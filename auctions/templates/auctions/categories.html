@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Categories</h2>
+
+    <div class="list-group list-group-flush">
+
+    {% for category in categories %}
+
+        {% if category == '' %}
+
+        <a href="/categories/general" class="list-group-item list-group-item-action">General</a>
+        {% else %}
+
+        <a href="/categories/{{category}}" class="list-group-item list-group-item-action">{{ category }}</a>
+        {% endif %}
+
+        
+            
+            
+            
+            
+            
+          
+
+        
+            
+        
+
+    {% endfor %}
+</div>
+
+
+
+{% endblock %}
