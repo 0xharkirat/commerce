@@ -1,0 +1,44 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Watchlist</h2>
+
+{% for listing in watchlist %}
+
+<div class="card mb-3">
+  <a class="stretched-link" href="{% url 'listing' listing.listing.id %}"></a>
+  <div class="row">
+    <div class="col-md-4">
+      <img
+        src="{{listing.listing.image}}"
+        class="mx-auto my-2 d-block"
+        alt="..."
+        style="height: 16rem"
+      />
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{listing.listing.title}}</h5>
+        <h6 class="card-subtitle mb-2">
+          <p class="font-weight-bold d-inline">Price:</p>
+          ${{listing.listing.bid}}
+        </h6>
+        <p class="card-text">{{listing.listing.description}}</p>
+
+        <p class="card-text">
+          <small class="text-muted">Created {{listing.listing.timestamp}}</small>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="card my-2">
+    <div class="card-body">
+      Watchlist is empty.
+    </div>
+  </div>
+
+{% endfor %} 
+
+{% endblock %}

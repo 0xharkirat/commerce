@@ -9,8 +9,19 @@ from .models import User, Listing, Watchlist, Bid, Comment
 
 
 def index(request):
+
+    totalwatchlist = None
+
+    loggeduser = User.objects.filter(pk=request.user.id).first()
+
+    if loggeduser:
+
+        totalwatchlist = loggeduser.watchlist.all().count()
+        print(totalwatchlist)
+
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all()
+        "listings": Listing.objects.all(),
+        "totalwatchlist": totalwatchlist
     })
 
 
@@ -89,6 +100,7 @@ def create(request):
 
 def listing(request, listing_id):
         message = None
+        totalwatchlist = None
 
         listing = Listing.objects.get(pk=listing_id)
         comments = listing.listingComments.all()
@@ -115,7 +127,7 @@ def listing(request, listing_id):
             "listing": listing,
             "canremove": canremove,
             "message": message,
-            "comments": comments
+            "comments": comments,
            
         })
 
@@ -197,7 +209,17 @@ def comment(request, listing_id):
 
 
 
-            
+@login_required(login_url='/login')
+def watchlist(request):
+    user = User.objects.get(pk=request.user.id)
+
+    watchlist = user.watchlist.all()
+
+    return render(request, "auctions/watchlist.html", {
+        "watchlist": watchlist
+    })
+
+
                 
 
 
