@@ -41,4 +41,10 @@ class Bid(models.Model):
 
 
 
-	
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="userComments")	
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="listingComments")
+    comment = models.TextField()
+
+    def __str__(self):
+        return f"{self.user}| {self.listing}| {self.comment}"

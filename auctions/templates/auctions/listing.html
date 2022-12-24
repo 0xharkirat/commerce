@@ -67,7 +67,42 @@ style="height: 16rem" src="{{listing.image}}" class="img-fluid" alt="Responsive 
     </ul>
 
 
+
+
 {% if user.is_authenticated %}
+
+
+<h5 class="mt-2">Comments</h5>
+    <form action="{% url 'comment' listing.id %}" method="post" class="my-4">
+        {% csrf_token %}
+        <div class="form-group">
+            
+            <textarea class="form-control" id="exampleFormControlTextarea1" name="comment" rows="3" placeholder="Comment Here." required></textarea>
+          </div>
+
+          <input type="hidden" value="{{ listing.id }}" name="id">
+
+          <input type="submit" value="Comment" class="btn btn-primary">
+    </form>
+
+    {% for comment in comments %}
+
+    <div class="card">
+        <div class="card-body">
+          <blockquote class="blockquote mb-0">
+            <p>{{ comment.comment }}</p>
+            <footer class="blockquote-footer">{{comment.user}} </footer>
+          </blockquote>
+        </div>
+      </div>
+    
+    {% empty %}
+    <div class="card my-2">
+        <div class="card-body">
+          No Comments yet. Add first comment.
+        </div>
+      </div>
+     {% endfor %}
 
     {% if listing.isActive %}
      <span class="badge badge-success">Active</span>

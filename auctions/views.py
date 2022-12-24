@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing, Watchlist, Bid
+from .models import User, Listing, Watchlist, Bid, Comment
 
 
 def index(request):
@@ -91,6 +91,7 @@ def listing(request, listing_id):
         message = None
 
         listing = Listing.objects.get(pk=listing_id)
+        comments = listing.listingComments.all()
 
 
         loggeduser = User.objects.filter(pk=request.user.id).first()
@@ -101,7 +102,8 @@ def listing(request, listing_id):
                 if user.user.id == loggeduser.id:
                     canremove = True
                     break
-
+            
+            
             currentbid =  loggeduser.bids.filter(listing=listing, isCurrent=True)
             totalbids = listing.bids.all().count()
             message = f"{totalbids} bid(s) so far."
@@ -113,6 +115,7 @@ def listing(request, listing_id):
             "listing": listing,
             "canremove": canremove,
             "message": message,
+            "comments": comments
            
         })
 
@@ -179,6 +182,18 @@ def win(request, listing_id):
 
     return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
 
+@login_required(login_url='/login')
+def comment(request, listing_id):
+    if request.method == "POST":
+        user = User.objects.get(pk=request.user.id)
+        listing = Listing.objects.get(pk=int(request.POST["id"]))
+
+        comment = request.POST["comment"]
+
+        newComment = Comment(user=user, listing=listing, comment=comment)
+        newComment.save()
+
+    return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
 
 
 
